@@ -59,7 +59,10 @@ def main() -> int:
     path: pathlib.Path = args.path
     gitignore_path = path / ".gitignore"
 
-    ignore_patterns = [".git"]
+    ignore_patterns = [
+        ".git",
+        ".cache",  # for uv cache
+    ]
     if gitignore_path.exists():
         with gitignore_path.open("r") as f:
             ignore_patterns.extend(f.readlines())
