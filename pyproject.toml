@@ -1,6 +1,6 @@
 [project]
 name = "end-of-file-fixer"
-description = "Implementations of the Circuit Breaker"
+description = "A command-line tool that ensures all your text files end with exactly one newline character"
 readme = "README.md"
 requires-python = ">=3.10,<4"
 dependencies = [
