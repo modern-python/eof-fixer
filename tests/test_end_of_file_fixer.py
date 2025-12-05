@@ -188,3 +188,58 @@ def test_end_of_file_fixer_with_gitignore() -> None:
         # The .tmp file should be unchanged since it's ignored
         temp_file_content = (temp_path / "temp_file.tmp").read_text()
         assert temp_file_content == "This is a temporary file that should be ignored"
+
+
+def test_end_of_file_fixer_skips_binary_files() -> None:
+    # Create a temporary directory with test files including a binary file
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+
+        # Copy all fixture files to temp directory
+        fixtures_dir = Path(__file__).parent / "fixtures"
+        for fixture_file in fixtures_dir.glob("*"):
+            assert shutil.copy(fixture_file, temp_path / fixture_file.name)
+
+        # Create a binary file with null bytes
+        binary_file = temp_path / "binary_file.bin"
+        binary_file.write_bytes(b"\x00\x01\x02\x03\x04\x05")
+
+        # Also create a text file without newline that should be fixed
+        text_file = temp_path / "text_no_newline.txt"
+        text_file.write_text("This is a text file without newline")
+
+        # Change to the temp directory and capture stdout
+        original_cwd = Path.cwd()
+        original_argv = sys.argv
+        original_stdout = sys.stdout
+        captured_output = StringIO()
+
+        try:
+            os.chdir(temp_dir)
+            sys.argv = ["end-of-file-fixer", "."]
+            sys.stdout = captured_output
+
+            # Run end-of-file-fixer . command
+            result = main()
+
+            # Should exit with code 1 (since the text file needed fixing)
+            assert result == 1
+
+            # Should output that the text file is being fixed
+            output = captured_output.getvalue()
+            assert "text_no_newline.txt" in output
+            # Should NOT mention the binary file
+            assert "binary_file.bin" not in output
+
+        finally:
+            os.chdir(original_cwd)
+            sys.argv = original_argv
+            sys.stdout = original_stdout
+
+        # Check that text file was fixed
+        text_content = (temp_path / "text_no_newline.txt").read_text()
+        assert text_content == "This is a text file without newline\n"
+
+        # Check that binary file was not modified
+        binary_content = (temp_path / "binary_file.bin").read_bytes()
+        assert binary_content == b"\x00\x01\x02\x03\x04\x05"

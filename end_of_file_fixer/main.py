@@ -7,7 +7,19 @@ from typing import IO
 import pathspec
 
 
-def _fix_file(file_obj: IO[bytes], check: bool) -> int:  # noqa: C901
+def _is_binary(file_obj: IO[bytes]) -> bool:
+    current_pos = file_obj.tell()
+    file_obj.seek(0)
+    sample = file_obj.read(1024)
+    file_obj.seek(current_pos)
+    return b"\x00" in sample
+
+
+def _fix_file(file_obj: IO[bytes], check: bool) -> int:  # noqa: C901, PLR0911
+    # Skip binary files
+    if _is_binary(file_obj):
+        return 0
+
     # Test for newline at end of file
     # Empty files will throw IOError here
     try:
