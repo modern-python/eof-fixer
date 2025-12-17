@@ -80,6 +80,7 @@ def main() -> int:
     ignore_patterns = [
         ".git",
         ".cache",  # for uv cache
+        ".uv-cache",  # for uv cache
     ]
     if gitignore_path.exists():
         with gitignore_path.open("r") as f:
