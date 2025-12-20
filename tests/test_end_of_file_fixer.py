@@ -5,7 +5,7 @@ import tempfile
 from io import StringIO
 from pathlib import Path
 
-from end_of_file_fixer.main import main
+from eof_fixer.main import main
 
 
 def test_end_of_file_fixer_command_with_check_false() -> None:
@@ -26,10 +26,10 @@ def test_end_of_file_fixer_command_with_check_false() -> None:
 
         try:
             os.chdir(temp_dir)
-            sys.argv = ["end-of-file-fixer", "."]
+            sys.argv = ["eof-fixer", "."]
             sys.stdout = captured_output
 
-            # Run end-of-file-fixer . command
+            # Run eof-fixer . command
             result = main()
 
             # Should exit with code 1 (since some files needed fixing)
@@ -90,10 +90,10 @@ def test_end_of_file_fixer_command_with_check_true() -> None:
 
         try:
             os.chdir(temp_dir)
-            sys.argv = ["end-of-file-fixer", ".", "--check"]
+            sys.argv = ["eof-fixer", ".", "--check"]
             sys.stdout = captured_output
 
-            # Run end-of-file-fixer . --check command
+            # Run eof-fixer . --check command
             result = main()
 
             # Should exit with code 1 (since some files need fixing)
@@ -150,10 +150,10 @@ def test_end_of_file_fixer_with_gitignore() -> None:
 
         try:
             os.chdir(temp_dir)
-            sys.argv = ["end-of-file-fixer", "."]
+            sys.argv = ["eof-fixer", "."]
             sys.stdout = captured_output
 
-            # Run end-of-file-fixer . command
+            # Run eof-fixer . command
             result = main()
 
             # Should exit with code 1 (since some files needed fixing)
@@ -216,10 +216,10 @@ def test_end_of_file_fixer_skips_binary_files() -> None:
 
         try:
             os.chdir(temp_dir)
-            sys.argv = ["end-of-file-fixer", "."]
+            sys.argv = ["eof-fixer", "."]
             sys.stdout = captured_output
 
-            # Run end-of-file-fixer . command
+            # Run eof-fixer . command
             result = main()
 
             # Should exit with code 1 (since the text file needed fixing)

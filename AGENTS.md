@@ -49,19 +49,19 @@ just lint  # Includes auto-formatting
 ### Using the Tool
 ```bash
 # Fix files in a directory (modifies files)
-python -m end_of_file_fixer.main /path/to/directory
+python -m eof_fixer.main /path/to/directory
 
 # Check files in a directory (dry run)
-python -m end_of_file_fixer.main /path/to/directory --check
+python -m eof_fixer.main /path/to/directory --check
 ```
 
 Or using the installed script:
 ```bash
 # Fix files
-end-of-file-fixer /path/to/directory
+eof-fixer /path/to/directory
 
 # Check files
-end-of-file-fixer /path/to/directory --check
+eof-fixer /path/to/directory --check
 ```
 
 ## Development Conventions
@@ -79,7 +79,7 @@ end-of-file-fixer /path/to/directory --check
 
 ### Project Structure
 ```
-end-of-file-fixer/
+eof-fixer/
 ├── end_of_file_fixer/     # Main package
 │   ├── __init__.py        # Package initializer
 │   └── main.py            # Main CLI implementation

@@ -25,13 +25,13 @@ Many POSIX systems expect text files to end with a newline character. Having con
 ### Using uv
 
 ```bash
-uv add end-of-file-fixer
+uv add eof-fixer
 ```
 
 ### Using pip
 
 ```bash
-pip install end-of-file-fixer
+pip install eof-fixer
 ```
 
 ## Usage
@@ -41,18 +41,18 @@ pip install end-of-file-fixer
 To fix all files in the current directory and subdirectories:
 
 ```bash
-end-of-file-fixer .
+eof-fixer .
 ```
 
 To check which files would be modified without making changes:
 
 ```bash
-end-of-file-fixer . --check
+eof-fixer . --check
 ```
 
 ## How It Works
 
-The end-of-file-fixer processes files in the following way:
+The eof-fixer processes files in the following way:
 
 1. **Files with no trailing newline**: Adds exactly one newline at the end
 2. **Files with exactly one trailing newline**: Leaves unchanged
@@ -89,8 +89,8 @@ The tool automatically respects patterns in your `.gitignore` file, so it won't 
 
 ```bash
 # Clone the repository
-git clone https://github.com/community-of-python/end-of-file-fixer.git
-cd end-of-file-fixer
+git clone https://github.com/modern-python/eof-fixer.git
+cd eof-fixer
 
 # Install dependencies
 just install
