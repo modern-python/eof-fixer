@@ -1,5 +1,5 @@
 [project]
-name = "end-of-file-fixer"
+name = "eof-fixer"
 description = "A command-line tool that ensures all your text files end with exactly one newline character"
 readme = "README.md"
 requires-python = ">=3.10,<4"
@@ -7,7 +7,7 @@ dependencies = [
     "pathspec",
 ]
 version = "0"
-authors = [{ name = "community-of-python" }]
+authors = [{ name = "modern-python" }]
 keywords = [
     "python",
 ]
@@ -21,12 +21,12 @@ classifiers = [
 ]
 
 [project.urls]
-Repository = "https://github.com/community-of-python/end-of-file-fixer"
-Issues = "https://github.com/community-of-python/end-of-file-fixer/issues"
-Changelogs = "https://github.com/community-of-python/end-of-file-fixer/releases"
+Repository = "https://github.com/modern-python/eof-fixer"
+Issues = "https://github.com/modern-python/eof-fixer/issues"
+Changelogs = "https://github.com/modern-python/eof-fixer/releases"
 
 [project.scripts]
-end-of-file-fixer = "end_of_file_fixer.main:main"
+eof-fixer = "eof_fixer.main:main"
 
 [dependency-groups]
 dev = [
@@ -41,7 +41,7 @@ requires = ["uv_build"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
-module-name = "end_of_file_fixer"
+module-name = "eof_fixer"
 module-root = ""
 
 [tool.mypy]
