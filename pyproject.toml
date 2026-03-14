@@ -30,10 +30,12 @@ eof-fixer = "eof_fixer.main:main"
 
 [dependency-groups]
 dev = [
-    "ruff",
-    "mypy",
     "pytest",
     "pytest-cov",
+]
+lint = [
+    "ruff",
+    "ty",
 ]
 
 [build-system]
@@ -43,10 +45,6 @@ build-backend = "uv_build"
 [tool.uv.build-backend]
 module-name = "eof_fixer"
 module-root = ""
-
-[tool.mypy]
-python_version = "3.10"
-strict = true
 
 [tool.ruff]
 fix = true
