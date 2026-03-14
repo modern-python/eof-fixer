@@ -12,7 +12,7 @@ Despite the project name, the description in `pyproject.toml` mentions "Implemen
 - **Development Tools**:
   - `uv` for package management and building
   - `ruff` for linting and formatting
-  - `mypy` for type checking
+  - `ty` for type checking
   - `pytest` for testing
   - `just` as a command runner
 
@@ -68,7 +68,7 @@ eof-fixer /path/to/directory --check
 
 ### Code Style
 - Line length: 120 characters
-- Strict type checking with mypy
+- Strict type checking with ty
 - Ruff linting with specific rule exceptions (see pyproject.toml)
 - No mandatory docstrings (D1 ignored)
 

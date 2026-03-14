@@ -2,17 +2,17 @@ default: install lint test
 
 install:
     uv lock --upgrade
-    uv sync --all-extras --frozen
+    uv sync --all-extras --all-groups --frozen
 
 lint:
     uv run ruff format
     uv run ruff check --fix
-    uv run mypy .
+    uv run ty check
 
 lint-ci:
     uv run ruff format --check
     uv run ruff check --no-fix
-    uv run mypy .
+    uv run ty check
 
 test *args:
     uv run --no-sync pytest {{ args }}

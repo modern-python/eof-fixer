@@ -89,7 +89,7 @@ def main() -> int:
     gitignore_spec = pathspec.GitIgnoreSpec.from_lines(ignore_patterns)
 
     retv = 0
-    for filename in gitignore_spec.match_tree(path, negate=True):
+    for filename in gitignore_spec.match_tree_files(path, negate=True):
         with pathlib.Path(filename).open("rb+") as f:
             ret_for_file = _fix_file(f, check=check)
             if ret_for_file:
