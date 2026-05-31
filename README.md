@@ -70,14 +70,18 @@ The eof-fixer processes files in the following way:
 
 ## Configuration
 
-The tool automatically respects patterns in your `.gitignore` file, so it won't process files that are ignored by Git. Additionally, it always ignores:
+The tool automatically respects patterns in your `.gitignore` file, so it won't process files that are ignored by Git. Only the `.gitignore` at the root of the supplied path is consulted; nested `.gitignore` files in subdirectories are not read. Additionally, it always ignores:
 - `.git` directories
-- `.cache` directories (used by uv)
+- `.cache` and `.uv-cache` directories (used by uv)
+- Binary files (detected by null bytes in the first 1024 bytes)
 
 ## Exit Codes
 
-- `0`: No files needed fixing or all files were successfully fixed
-- `1`: Some files needed fixing (when using `--check` mode)
+- `0`: No files needed fixing.
+- `1`: At least one file needed fixing. In `--check` mode no changes are written;
+  in the default (fix) mode the files have been rewritten in place. The non-zero
+  exit in fix mode is intentional so the tool can be used as a pre-commit or CI
+  gate — re-run after the fix and the exit code returns to `0`.
 
 ## Development
 
@@ -123,6 +127,15 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+The core file-fixing logic in this project is derived from the
+[`end-of-file-fixer`](https://github.com/pre-commit/pre-commit-hooks/blob/main/pre_commit_hooks/end_of_file_fixer.py)
+hook in [`pre-commit/pre-commit-hooks`](https://github.com/pre-commit/pre-commit-hooks),
+which is also distributed under the MIT License. This project repackages that
+logic as a standalone CLI with `.gitignore`-aware directory traversal so it can
+be used outside of the pre-commit framework.
 
 ## Related Projects
 
