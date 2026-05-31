@@ -37,9 +37,9 @@ def test_end_of_file_fixer_command_with_check_false() -> None:
 
             # Should output which files are being fixed
             output = captured_output.getvalue()
-            assert "no_newline.txt" in output
-            assert "multiple_newlines.txt" in output
-            assert "newlines_only.txt" in output
+            assert "Fixing no_newline.txt\n" in output
+            assert "Fixing multiple_newlines.txt\n" in output
+            assert "Fixing newlines_only.txt\n" in output
 
         finally:
             os.chdir(original_cwd)
@@ -101,9 +101,9 @@ def test_end_of_file_fixer_command_with_check_true() -> None:
 
             # Should output which files need fixing
             output = captured_output.getvalue()
-            assert "no_newline.txt" in output
-            assert "multiple_newlines.txt" in output
-            assert "newlines_only.txt" in output
+            assert "Fixing no_newline.txt\n" in output
+            assert "Fixing multiple_newlines.txt\n" in output
+            assert "Fixing newlines_only.txt\n" in output
 
         finally:
             os.chdir(original_cwd)
@@ -161,11 +161,11 @@ def test_end_of_file_fixer_with_gitignore() -> None:
 
             # Should output which files are being fixed
             output = captured_output.getvalue()
-            assert "no_newline.txt" in output
-            assert "multiple_newlines.txt" in output
-            assert "newlines_only.txt" in output
+            assert "Fixing no_newline.txt\n" in output
+            assert "Fixing multiple_newlines.txt\n" in output
+            assert "Fixing newlines_only.txt\n" in output
             # Should NOT mention the .tmp file since it's ignored by .gitignore
-            assert "temp_file.tmp" not in output
+            assert "Fixing temp_file.tmp\n" not in output
 
         finally:
             os.chdir(original_cwd)
@@ -227,9 +227,9 @@ def test_end_of_file_fixer_skips_binary_files() -> None:
 
             # Should output that the text file is being fixed
             output = captured_output.getvalue()
-            assert "text_no_newline.txt" in output
+            assert "Fixing text_no_newline.txt\n" in output
             # Should NOT mention the binary file
-            assert "binary_file.bin" not in output
+            assert "Fixing binary_file.bin\n" not in output
 
         finally:
             os.chdir(original_cwd)

@@ -93,7 +93,7 @@ def main() -> int:
         with pathlib.Path(filename).open("rb+") as f:
             ret_for_file = _fix_file(f, check=check)
             if ret_for_file:
-                sys.stdout.write(f"Fixing {filename}")
+                sys.stdout.write(f"Fixing {filename}\n")
             retv |= ret_for_file
 
     return retv
