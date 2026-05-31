@@ -1,11 +1,38 @@
 import os
 import shutil
+import stat
 import sys
 import tempfile
+from collections.abc import Iterator
+from contextlib import contextmanager
 from io import StringIO
 from pathlib import Path
 
+import pytest
+
 from eof_fixer.main import main
+
+
+@contextmanager
+def _run_main_in(temp_dir: Path, argv: list[str]) -> Iterator[tuple[StringIO, StringIO]]:
+    """Swap cwd, argv, stdout, stderr around a ``main()`` call."""
+    captured_stdout = StringIO()
+    captured_stderr = StringIO()
+    original_cwd = Path.cwd()
+    original_argv = sys.argv
+    original_stdout = sys.stdout
+    original_stderr = sys.stderr
+    try:
+        os.chdir(temp_dir)
+        sys.argv = argv
+        sys.stdout = captured_stdout
+        sys.stderr = captured_stderr
+        yield captured_stdout, captured_stderr
+    finally:
+        os.chdir(original_cwd)
+        sys.argv = original_argv
+        sys.stdout = original_stdout
+        sys.stderr = original_stderr
 
 
 def test_end_of_file_fixer_command_with_check_false() -> None:
@@ -243,3 +270,183 @@ def test_end_of_file_fixer_skips_binary_files() -> None:
         # Check that binary file was not modified
         binary_content = (temp_path / "binary_file.bin").read_bytes()
         assert binary_content == b"\x00\x01\x02\x03\x04\x05"
+
+
+def test_crlf_no_trailing_newline_appends_lf() -> None:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        target = temp_path / "crlf_no_newline.txt"
+        target.write_bytes(b"a\r\nb")
+
+        with _run_main_in(temp_path, ["eof-fixer", "."]) as (stdout, _stderr):
+            result = main()
+
+        assert result == 1
+        assert "Fixing crlf_no_newline.txt\n" in stdout.getvalue()
+        # LF is appended even though the file uses CRLF — documented behavior.
+        assert target.read_bytes() == b"a\r\nb\n"
+
+
+def test_crlf_perfect_unchanged() -> None:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        target = temp_path / "crlf_perfect.txt"
+        target.write_bytes(b"a\r\n")
+
+        with _run_main_in(temp_path, ["eof-fixer", "."]) as (stdout, _stderr):
+            result = main()
+
+        assert result == 0
+        assert stdout.getvalue() == ""
+        assert target.read_bytes() == b"a\r\n"
+
+
+def test_crlf_multiple_trailing_truncated_to_one() -> None:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        target = temp_path / "crlf_multiple.txt"
+        target.write_bytes(b"a\r\n\r\n\r\n")
+
+        with _run_main_in(temp_path, ["eof-fixer", "."]) as (stdout, _stderr):
+            result = main()
+
+        assert result == 1
+        assert "Fixing crlf_multiple.txt\n" in stdout.getvalue()
+        assert target.read_bytes() == b"a\r\n"
+
+
+def test_cr_only_multiple_trailing_truncated_to_one() -> None:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        target = temp_path / "cr_only.txt"
+        target.write_bytes(b"a\r\r\r")
+
+        with _run_main_in(temp_path, ["eof-fixer", "."]) as (stdout, _stderr):
+            result = main()
+
+        assert result == 1
+        assert "Fixing cr_only.txt\n" in stdout.getvalue()
+        assert target.read_bytes() == b"a\r"
+
+
+def test_bom_prefixed_file_is_treated_as_text() -> None:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        target = temp_path / "bom_no_newline.txt"
+        target.write_bytes(b"\xef\xbb\xbfhello")
+
+        with _run_main_in(temp_path, ["eof-fixer", "."]) as (stdout, _stderr):
+            result = main()
+
+        assert result == 1
+        assert "Fixing bom_no_newline.txt\n" in stdout.getvalue()
+        assert target.read_bytes() == b"\xef\xbb\xbfhello\n"
+
+
+def test_null_byte_beyond_first_1024_bytes_is_treated_as_text() -> None:
+    # _is_binary inspects only the first 1024 bytes, so a null byte past that
+    # boundary does NOT mark the file as binary. Document the current behavior.
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        target = temp_path / "late_null.txt"
+        payload = b"a" * 2000 + b"\x00" + b"b"
+        target.write_bytes(payload)
+
+        with _run_main_in(temp_path, ["eof-fixer", "."]) as (stdout, _stderr):
+            result = main()
+
+        assert result == 1
+        assert "Fixing late_null.txt\n" in stdout.getvalue()
+        assert target.read_bytes() == payload + b"\n"
+
+
+def test_symlink_in_tree_does_not_crash() -> None:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        target = temp_path / "target.txt"
+        target.write_bytes(b"contents without newline")
+        link = temp_path / "link.txt"
+        try:
+            link.symlink_to(target)
+        except (OSError, NotImplementedError):  # pragma: no cover
+            pytest.skip("symlinks not available on this platform")
+
+        with _run_main_in(temp_path, ["eof-fixer", "."]) as (_stdout, _stderr):
+            result = main()
+
+        # Either path (link followed or skipped) is acceptable — but the
+        # walked target itself must end up fixed and the tool must not crash.
+        assert result == 1
+        assert target.read_bytes().endswith(b"\n")
+
+
+def test_path_arg_rejects_file() -> None:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        not_a_dir = temp_path / "regular.txt"
+        not_a_dir.write_text("hi\n")
+
+        with (
+            _run_main_in(temp_path, ["eof-fixer", str(not_a_dir)]) as (_stdout, stderr),
+            pytest.raises(SystemExit) as exc_info,
+        ):
+            main()
+
+        assert exc_info.value.code != 0
+        assert "is not a directory" in stderr.getvalue()
+        assert str(not_a_dir) in stderr.getvalue()
+
+
+def test_path_arg_rejects_nonexistent_path() -> None:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        missing = temp_path / "does-not-exist"
+
+        with (
+            _run_main_in(temp_path, ["eof-fixer", str(missing)]) as (_stdout, stderr),
+            pytest.raises(SystemExit) as exc_info,
+        ):
+            main()
+
+        assert exc_info.value.code != 0
+        assert "is not a directory" in stderr.getvalue()
+
+
+def test_readonly_file_in_check_mode_does_not_raise() -> None:
+    # In --check mode no writes occur, so the file should be opened read-only
+    # and not raise on read-only files.
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        readonly = temp_path / "readonly.txt"
+        readonly.write_text("no newline")
+        readonly.chmod(stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
+
+        try:
+            with _run_main_in(temp_path, ["eof-fixer", ".", "--check"]) as (stdout, _stderr):
+                result = main()
+
+            assert result == 1
+            assert "Fixing readonly.txt\n" in stdout.getvalue()
+            # File must still be unchanged in check mode.
+            assert readonly.read_text() == "no newline"
+        finally:
+            # Restore writable bits so the tempdir can be cleaned up.
+            readonly.chmod(stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
+
+
+def test_runs_from_unrelated_cwd_with_absolute_path() -> None:
+    # Regression test: the tool should work when invoked with an absolute path
+    # that is not the caller's cwd. Previously yielded relative names were
+    # opened against cwd, causing FileNotFoundError.
+    with tempfile.TemporaryDirectory() as work_dir, tempfile.TemporaryDirectory() as target_dir:
+        work_path = Path(work_dir)
+        target_path = Path(target_dir)
+        target_file = target_path / "needs_fix.txt"
+        target_file.write_text("no newline")
+
+        with _run_main_in(work_path, ["eof-fixer", str(target_path)]) as (stdout, _stderr):
+            result = main()
+
+        assert result == 1
+        assert "Fixing needs_fix.txt\n" in stdout.getvalue()
+        assert target_file.read_text() == "no newline\n"
