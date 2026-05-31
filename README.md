@@ -68,6 +68,12 @@ The eof-fixer processes files in the following way:
 | `hello world\n\n\n`  | `hello world\n`  |
 | `` (empty file)      | `` (unchanged)   |
 
+> **Note on line endings:** when appending a missing terminator, eof-fixer always
+> writes an LF (`\n`), regardless of the existing line-ending style of the file.
+> A file that otherwise uses CRLF or CR will end up with a mixed terminator on
+> its last line. This matches the behavior of pre-commit's `end-of-file-fixer`.
+> Files that already end with a single CRLF, CR, or LF are left untouched.
+
 ## Configuration
 
 The tool automatically respects patterns in your `.gitignore` file, so it won't process files that are ignored by Git. Only the `.gitignore` at the root of the supplied path is consulted; nested `.gitignore` files in subdirectories are not read. Additionally, it always ignores:
