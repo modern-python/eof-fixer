@@ -1,4 +1,16 @@
-# End Of File Fixer
+# eof-fixer
+
+[![PyPI version](https://img.shields.io/pypi/v/eof-fixer.svg)](https://pypi.org/project/eof-fixer/)
+[![Supported Python versions](https://img.shields.io/pypi/pyversions/eof-fixer.svg)](https://pypi.org/project/eof-fixer/)
+[![Downloads](https://img.shields.io/pypi/dm/eof-fixer.svg)](https://pypistats.org/packages/eof-fixer)
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/modern-python/eof-fixer/actions/workflows/ci.yml)
+[![CI](https://github.com/modern-python/eof-fixer/actions/workflows/ci.yml/badge.svg)](https://github.com/modern-python/eof-fixer/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/modern-python/eof-fixer.svg)](https://github.com/modern-python/eof-fixer/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/modern-python/eof-fixer)](https://github.com/modern-python/eof-fixer/stargazers)
+[![Context7](https://img.shields.io/badge/Context7-docs-blue)](https://context7.com/modern-python/eof-fixer)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)
 
 A command-line tool that ensures all your text files end with exactly one newline character.
 This tool helps maintain consistent file formatting across your codebase by automatically adding or removing trailing newlines as needed.
@@ -148,8 +160,11 @@ be used outside of the pre-commit framework.
 - [pre-commit](https://pre-commit.com/) - A framework for managing and maintaining multi-language pre-commit hooks
 - [editorconfig](https://editorconfig.org/) - Helps maintain consistent coding styles across different editors and IDEs
 
+## 📦 [PyPI](https://pypi.org/project/eof-fixer)
+
+## 📝 [License](LICENSE)
+
 ## Part of `modern-python`
 
 Browse the full list of templates and libraries in
-[`modern-python`](https://github.com/modern-python) — see the org profile for the
-categorized index.
+[`modern-python`](https://github.com/modern-python) — see the org profile for the categorized index.
