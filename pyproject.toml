@@ -1,6 +1,7 @@
 [project]
 name = "eof-fixer"
 description = "CLI tool that ensures text files end with exactly one newline"
+license = "MIT"
 readme = "README.md"
 requires-python = ">=3.10,<4"
 dependencies = [
@@ -20,7 +21,6 @@ keywords = [
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Typing :: Typed",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
