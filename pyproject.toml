@@ -1,6 +1,6 @@
 [project]
 name = "eof-fixer"
-description = "A command-line tool that ensures all your text files end with exactly one newline character"
+description = "CLI tool that ensures text files end with exactly one newline"
 readme = "README.md"
 requires-python = ">=3.10,<4"
 dependencies = [
@@ -9,9 +9,18 @@ dependencies = [
 version = "0"
 authors = [{ name = "modern-python" }]
 keywords = [
+    "cli",
+    "pre-commit",
+    "formatter",
+    "newline",
+    "eof",
+    "linter",
     "python",
 ]
 classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
     "Typing :: Typed",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -21,9 +30,10 @@ classifiers = [
 ]
 
 [project.urls]
+Homepage = "https://modern-python.org"
 Repository = "https://github.com/modern-python/eof-fixer"
 Issues = "https://github.com/modern-python/eof-fixer/issues"
-Changelogs = "https://github.com/modern-python/eof-fixer/releases"
+Changelog = "https://github.com/modern-python/eof-fixer/releases"
 
 [project.scripts]
 eof-fixer = "eof_fixer.main:main"
