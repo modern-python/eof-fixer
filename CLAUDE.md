@@ -4,22 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-```bash
-just install        # Lock deps and sync
-just lint           # Format + check + type check (auto-fixes)
-just lint-ci        # Lint in check mode only (no fixes)
-just test           # Run pytest with coverage
-just test tests/test_end_of_file_fixer.py::test_name  # Run a single test
-```
+See `Justfile` for recipes (`just --list`). Notes that aren't obvious from the recipes:
 
-Tests use `uv run --no-sync pytest` under the hood. Coverage is always enabled.
+- `just lint` auto-fixes; `just lint-ci` is check-only (used in CI).
+- `just test` runs `uv run --no-sync pytest` with coverage always enabled; it
+  forwards args, e.g. `just test tests/test_end_of_file_fixer.py::test_name`.
 
 ## Architecture
 
 Single-purpose CLI tool: ensures text files end with exactly one newline.
 
-- **Entry point:** `eof_fixer/main.py:main()` — parses args, loads `.gitignore` via `pathspec.GitIgnoreSpec`, iterates non-ignored files, calls `_fix_file()` on each
-- **`_fix_file(file_obj, check)`** — opens files in binary `rb+` mode, detects binary files (null bytes in first 1024 bytes), handles four cases: empty file (skip), no trailing newline (add `\n`), all-newlines file (truncate to empty), multiple trailing newlines (truncate to one)
+- **Entry point:** `eof_fixer/main.py:main()` — requires a directory path arg, loads `.gitignore` via `pathspec.GitIgnoreSpec`, iterates non-ignored files (opened `rb` in check mode, `rb+` otherwise), calls `_fix_file()` on each
+- **`_fix_file(file_obj, check)`** — skips binary files (null bytes in first 1024 bytes), then delegates to `_detect_trailing()`, which returns the action: `none` (empty or already ends with one terminator), `append_lf` (no trailing newline → add `\n`), or `truncate` (all-newlines → truncate to empty, or excess trailing newlines → truncate to one)
 - **Check mode (`--check`)** — reports what would change without writing; exit code 1 if any files need fixing
 
 Files skipped: binary files, empty files, `.git`/`.cache`/`.uv-cache` directories, and anything matched by the directory's `.gitignore`.
