@@ -81,6 +81,10 @@ def test_check_mode_returns_true_but_does_not_write() -> None:
     assert _run(b"abc", check=True) == (True, b"abc")
 
 
+def test_check_mode_truncate_does_not_write() -> None:
+    assert _run(b"abc\n\n\n", check=True) == (True, b"abc\n\n\n")
+
+
 # ---- orchestration layer: fix_directory on a temp tree ----
 
 

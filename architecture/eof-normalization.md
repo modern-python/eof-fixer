@@ -31,15 +31,22 @@ kilobyte.
 
 ## The action model
 
-Inspection returns one of three actions, derived purely from the file's tail:
+`_detect_trailing` returns `_EofAction = Noop | AppendLf | Truncate(offset)` —
+a sealed union of frozen dataclasses, derived purely from the file's tail:
 
-- **`none`** — nothing to do. The file is empty (a seek to the last byte
+- **`Noop`** — nothing to do. The file is empty (a seek to the last byte
   fails), or it already ends with exactly one terminator.
-- **`append_lf`** — the last byte is not a terminator, so a single `\n` is
+- **`AppendLf`** — the last byte is not a terminator, so a single `\n` is
   appended.
-- **`truncate(offset)`** — there are excess trailing terminators; the file is
+- **`Truncate(offset)`** — there are excess trailing terminators; the file is
   cut to `offset`. `offset == 0` means the file is **all** terminators and is
-  truncated to empty.
+  truncated to empty. The `offset` field exists only on `Truncate`.
+
+`fix_file` consumes the action with an exhaustive `match` (three named cases
+plus a wildcard). Completeness is enforced at the match site by a
+`case _: _assert_never(action)` arm — an unhandled future variant is a type
+error there, because ty infers the wildcard receives `Never` only when all
+union members are covered above it.
 
 This split keeps the *decision* (read-only, used by check mode) separate from
 the *mutation* (write mode), so the same logic drives both modes.
