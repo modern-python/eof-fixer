@@ -1,5 +1,5 @@
 ---
-summary: Deepen the fix behavior into eof_fixer/fixer.py (fix_file + fix_directory) so main() becomes a thin CLI adapter and the test surface moves off the process/global-state harness.
+summary: Fix behavior now lives behind eof_fixer/fixer.py (fix_file + fix_directory); main() is a thin adapter and tests target the interface instead of the argv/stdout/cwd harness.
 ---
 
 # Design: Deepen the fix into `fixer.py`; `main()` becomes an adapter

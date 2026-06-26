@@ -1,9 +1,24 @@
 # EOF normalization
 
-The core capability: given a single open file, decide whether its end-of-file
-terminator is correct and, in fix mode, make it so. "Correct" means the file
-ends with **exactly one** line terminator — no missing newline, no trailing
-blank lines.
+The core capability lives in `eof_fixer/fixer.py` and is exposed through two
+public functions:
+
+- **`fix_file(file_obj, *, check) -> bool`** — given a single open binary
+  file, decide whether its end-of-file terminator is correct and, in fix mode,
+  make it so. Returns `True` if the file was (or, under `check`, would be)
+  fixed.
+- **`fix_directory(root, *, check=False, extra_excludes=()) -> list[pathlib.Path]`**
+  — drives `discovery.iter_text_files`, owns the default-skip policy
+  (`DEFAULT_EXCLUDES = (".cache", ".uv-cache")`), opens each file `rb` under
+  check else `rb+`, calls `fix_file`, and returns the relative paths
+  fixed (or would-be-fixed) in walk order.
+
+`main()` no longer holds the file-level logic — it delegates entirely to
+`fix_directory` and renders the result. See [cli](cli.md) for the adapter
+layer.
+
+"Correct" means the file ends with **exactly one** line terminator — no
+missing newline, no trailing blank lines.
 
 ## Binary skip
 
@@ -50,6 +65,6 @@ In fix mode:
 
 In check mode no bytes are written; the action is computed and reported only.
 
-Either way, a file that needed changing contributes a non-zero result to the
-caller — see [cli](cli.md) for how that becomes the process exit code and the
-`Fixing <file>` line.
+Either way, `fix_file` returns `True` if the file needed changing;
+`fix_directory` collects those into the returned path list. See [cli](cli.md)
+for how that list becomes the process exit code and the `Fixing <file>` lines.

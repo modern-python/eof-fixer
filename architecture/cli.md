@@ -2,6 +2,12 @@
 
 The command-line surface and its contract with callers (shells, CI, pre-commit).
 
+`main()` is a thin adapter over `fix_directory`: it parses args, guards
+`is_dir` (exit 2), delegates the walk to `fix_directory`, renders one
+`Fixing <path>` line per returned path, and exits `1`/`0`. It holds no
+file-level logic. See [eof-normalization](eof-normalization.md) for how
+`fix_directory` and `fix_file` do the actual work.
+
 ## Interface
 
 - `eof-fixer <path>` — fix every non-ignored text file under `<path>` in place.
@@ -19,12 +25,14 @@ visited file.
 ## Output
 
 For each file that needs (or would need) fixing, the tool writes `Fixing
-<filename>\n` to stdout — the relative path as discovery yielded it. Output goes
-through `sys.stdout.write`, not `print`.
+<filename>\n` to stdout — the relative path as discovery yielded it. Output
+goes through `sys.stdout.write`, not `print`. Output is batch-rendered:
+all `Fixing` lines are written after `fix_directory` returns, not streamed
+during the walk.
 
 ## Exit code
 
-`main()` accumulates a result by OR-ing each file's outcome:
+`main()` derives its result from the list returned by `fix_directory`:
 
 - **0** — every file already ended correctly (nothing changed / nothing would
   change).
