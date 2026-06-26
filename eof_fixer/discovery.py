@@ -21,6 +21,7 @@ def _is_ignored(rel: str, is_dir: bool, stack: list[tuple[str, GitIgnoreSpec]]) 
     """Evaluate specs deepest-first; first definitive verdict wins (git precedence)."""
     suffix = "/" if is_dir else ""
     for anchor, spec in reversed(stack):
+        # rel is always within anchor's subtree: specs are popped on leaving their dir.
         subpath = rel if not anchor else rel[len(anchor) + 1 :]
         result = spec.check_file(subpath + suffix)
         if result.include is not None:

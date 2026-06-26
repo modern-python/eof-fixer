@@ -21,9 +21,10 @@ directory it lives in. Each entry is classified by evaluating the stack
 wins, last match within a file wins, negation re-includes).
 
 At the bottom of the stack sits a **baseline spec** built from `.cache`,
-`.uv-cache`, and any names passed via `--exclude`. This ensures today's
-default skip behaviour is preserved even in trees that carry no `.gitignore`
-at all.
+`.uv-cache`, and any names passed via `--exclude` — anchored at the scanned
+root and evaluated beneath every directory's `.gitignore`. This ensures
+today's default skip behaviour is preserved even in trees that carry no
+`.gitignore` at all.
 
 Additional rules applied unconditionally:
 
