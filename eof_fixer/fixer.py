@@ -1,3 +1,4 @@
+import dataclasses
 import os
 import pathlib
 from collections.abc import Iterator, Sequence
@@ -10,6 +11,26 @@ DEFAULT_EXCLUDES = (".cache", ".uv-cache")
 _BINARY_SAMPLE_SIZE = 1024
 
 
+@dataclasses.dataclass(frozen=True)
+class Noop:
+    """No change: the file is empty or already ends with exactly one terminator."""
+
+
+@dataclasses.dataclass(frozen=True)
+class AppendLf:
+    """The file lacks a trailing newline; append a single LF."""
+
+
+@dataclasses.dataclass(frozen=True)
+class Truncate:
+    """The file has excess trailing newlines; truncate to `offset` (0 = empty)."""
+
+    offset: int
+
+
+_EofAction = Noop | AppendLf | Truncate
+
+
 def _is_binary(file_obj: IO[bytes]) -> bool:
     current_pos = file_obj.tell()
     file_obj.seek(0)
@@ -18,30 +39,23 @@ def _is_binary(file_obj: IO[bytes]) -> bool:
     return b"\x00" in sample
 
 
-def _detect_trailing(file_obj: IO[bytes]) -> tuple[str, int]:
-    """Inspect the end of `file_obj` and return the action needed.
-
-    Returns one of:
-      - ("none", 0)           — file is empty, or already ends with exactly one terminator.
-      - ("append_lf", 0)      — file lacks a trailing newline; an LF should be appended.
-      - ("truncate", offset)  — file has excess trailing newlines; truncate to `offset`
-                                (0 means truncate to empty).
-    """
+def _detect_trailing(file_obj: IO[bytes]) -> _EofAction:
+    """Inspect the end of `file_obj` and return the action needed."""
     try:
         file_obj.seek(-1, os.SEEK_END)
     except OSError:
-        return ("none", 0)
+        return Noop()
 
     last_character = file_obj.read(1)
     if not last_character:
-        return ("none", 0)
+        return Noop()
     if last_character not in {b"\n", b"\r"}:
-        return ("append_lf", 0)
+        return AppendLf()
 
     while last_character in {b"\n", b"\r"}:
         if file_obj.tell() == 1:
             # All bytes are line terminators — truncate to empty.
-            return ("truncate", 0)
+            return Truncate(0)
         file_obj.seek(-2, os.SEEK_CUR)
         last_character = file_obj.read(1)
 
@@ -49,9 +63,9 @@ def _detect_trailing(file_obj: IO[bytes]) -> tuple[str, int]:
     remaining = file_obj.read()
     for sequence in (b"\n", b"\r\n", b"\r"):
         if remaining == sequence:
-            return ("none", 0)
+            return Noop()
         if remaining.startswith(sequence):
-            return ("truncate", position + len(sequence))
+            return Truncate(position + len(sequence))
 
     raise AssertionError("unreachable")  # pragma: no cover  # noqa: EM101
 
@@ -65,20 +79,20 @@ def fix_file(file_obj: IO[bytes], *, check: bool) -> bool:
     if _is_binary(file_obj):
         return False
 
-    action, offset = _detect_trailing(file_obj)
-    if action == "none":
-        return False
-
-    if not check:
-        if action == "append_lf":
-            # Needs this seek for windows, otherwise IOError
-            file_obj.seek(0, os.SEEK_END)
-            file_obj.write(b"\n")
-        else:  # action == "truncate"
-            file_obj.seek(offset)
-            file_obj.truncate()
-
-    return True
+    match _detect_trailing(file_obj):
+        case Noop():
+            return False
+        case AppendLf():
+            if not check:
+                # Needs this seek for windows, otherwise IOError
+                file_obj.seek(0, os.SEEK_END)
+                file_obj.write(b"\n")
+            return True
+        case Truncate(offset):
+            if not check:
+                file_obj.seek(offset)
+                file_obj.truncate()
+            return True
 
 
 def fix_directory(
