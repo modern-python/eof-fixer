@@ -4,7 +4,7 @@ import pathlib
 import sys
 from typing import IO
 
-import pathspec
+from eof_fixer.discovery import iter_text_files
 
 
 def _is_binary(file_obj: IO[bytes]) -> bool:
@@ -75,6 +75,13 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("path", help="path to directory", type=pathlib.Path)
     parser.add_argument("--check", action="store_true")
+    parser.add_argument(
+        "--exclude",
+        action="append",
+        default=None,
+        metavar="DIR",
+        help="extra file/directory name to skip, in addition to .git, .cache, .uv-cache (repeatable)",
+    )
     args = parser.parse_args()
 
     path: pathlib.Path = args.path
@@ -83,27 +90,15 @@ def main() -> int:
     if not path.is_dir():
         parser.error(f"path is not a directory: {path}")
 
-    gitignore_path = path / ".gitignore"
-    ignore_patterns = [
-        ".git",
-        ".cache",  # for uv cache
-        ".uv-cache",  # for uv cache
-    ]
-    if gitignore_path.exists():
-        with gitignore_path.open("r") as f:
-            ignore_patterns.extend(f.readlines())
-
-    gitignore_spec = pathspec.GitIgnoreSpec.from_lines(ignore_patterns)
+    extra_excludes = [".cache", ".uv-cache", *(args.exclude or [])]
     open_mode = "rb" if check else "rb+"
 
     retv = 0
-    for filename in gitignore_spec.match_tree_files(path, negate=True):
-        # match_tree_files yields paths relative to `path`, not cwd — resolve
-        # them so the tool works regardless of the caller's working directory.
-        with (path / filename).open(open_mode) as f:
+    for relative_path in iter_text_files(path, extra_excludes):
+        with (path / relative_path).open(open_mode) as f:
             ret_for_file = _fix_file(f, check=check)
             if ret_for_file:
-                sys.stdout.write(f"Fixing {filename}\n")
+                sys.stdout.write(f"Fixing {relative_path}\n")
             retv |= ret_for_file
 
     return retv

@@ -434,6 +434,25 @@ def test_readonly_file_in_check_mode_does_not_raise() -> None:
             readonly.chmod(stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
 
 
+def test_exclude_flag_augments_default_skips() -> None:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        (temp_path / "keep.txt").write_bytes(b"no newline")
+        vendor = temp_path / "vendor"
+        vendor.mkdir()
+        (vendor / "lib.txt").write_bytes(b"no newline")
+
+        with _run_main_in(temp_path, ["eof-fixer", ".", "--exclude", "vendor"]) as (stdout, _stderr):
+            result = main()
+
+        output = stdout.getvalue()
+        assert result == 1
+        assert "Fixing keep.txt\n" in output
+        assert "Fixing vendor/lib.txt\n" not in output
+        # vendor file left untouched because it was excluded
+        assert (vendor / "lib.txt").read_bytes() == b"no newline"
+
+
 def test_runs_from_unrelated_cwd_with_absolute_path() -> None:
     # Regression test: the tool should work when invoked with an absolute path
     # that is not the caller's cwd. Previously yielded relative names were
