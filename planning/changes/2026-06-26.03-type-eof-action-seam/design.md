@@ -1,5 +1,5 @@
 ---
-summary: Type the EOF-action seam in fixer.py — _detect_trailing returns a sealed union (Noop | AppendLf | Truncate) consumed by an exhaustive match, killing the magic strings.
+summary: _detect_trailing now returns a sealed union (Noop | AppendLf | Truncate) consumed by an exhaustive match in fix_file; the magic strings and dummy offset are gone, behavior unchanged.
 ---
 
 # Design: Type the EOF-action seam
