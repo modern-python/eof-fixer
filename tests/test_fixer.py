@@ -36,6 +36,16 @@ def test_empty_unchanged() -> None:
     assert _run(b"") == (False, b"")
 
 
+def test_empty_real_file_unchanged(tmp_path: pathlib.Path) -> None:
+    # BytesIO(b"") handles seek(-1, SEEK_END) without error; a real empty file
+    # raises OSError, exercising the except branch in _detect_trailing.
+    empty = tmp_path / "empty.txt"
+    empty.write_bytes(b"")
+    with empty.open("rb+") as f:
+        assert fix_file(f, check=False) is False
+    assert empty.read_bytes() == b""
+
+
 def test_crlf_no_trailing_appends_lf() -> None:
     assert _run(b"a\r\nb") == (True, b"a\r\nb\n")
 
