@@ -42,10 +42,11 @@ a sealed union of frozen dataclasses, derived purely from the file's tail:
   cut to `offset`. `offset == 0` means the file is **all** terminators and is
   truncated to empty. The `offset` field exists only on `Truncate`.
 
-`fix_file` consumes the action with an exhaustive `match` (three cases, no
-wildcard). Completeness is enforced by ty: an unhandled future variant causes
-the function to implicitly return `None`, which ty rejects as incompatible with
-the declared `-> bool` return type.
+`fix_file` consumes the action with an exhaustive `match` (three named cases
+plus a wildcard). Completeness is enforced at the match site by a
+`case _: _assert_never(action)` arm — an unhandled future variant is a type
+error there, because ty infers the wildcard receives `Never` only when all
+union members are covered above it.
 
 This split keeps the *decision* (read-only, used by check mode) separate from
 the *mutation* (write mode), so the same logic drives both modes.

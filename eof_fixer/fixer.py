@@ -2,13 +2,18 @@ import dataclasses
 import os
 import pathlib
 from collections.abc import Iterator, Sequence
-from typing import IO
+from typing import IO, NoReturn
 
 from eof_fixer.discovery import iter_text_files
 
 
 DEFAULT_EXCLUDES = (".cache", ".uv-cache")
 _BINARY_SAMPLE_SIZE = 1024
+
+
+def _assert_never(value: NoReturn) -> NoReturn:
+    """Static-exhaustiveness guard: ty errors if any union member can reach here."""
+    raise AssertionError(value)  # pragma: no cover
 
 
 @dataclasses.dataclass(frozen=True)
@@ -79,7 +84,8 @@ def fix_file(file_obj: IO[bytes], *, check: bool) -> bool:
     if _is_binary(file_obj):
         return False
 
-    match _detect_trailing(file_obj):
+    action = _detect_trailing(file_obj)
+    match action:
         case Noop():
             return False
         case AppendLf():
@@ -93,6 +99,8 @@ def fix_file(file_obj: IO[bytes], *, check: bool) -> bool:
                 file_obj.seek(offset)
                 file_obj.truncate()
             return True
+        case _:  # pragma: no cover
+            _assert_never(action)
 
 
 def fix_directory(
