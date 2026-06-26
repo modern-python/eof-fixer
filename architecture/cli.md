@@ -6,6 +6,11 @@ The command-line surface and its contract with callers (shells, CI, pre-commit).
 
 - `eof-fixer <path>` — fix every non-ignored text file under `<path>` in place.
 - `eof-fixer <path> --check` — report what would change, write nothing.
+- `eof-fixer <path> --exclude DIR` — add `DIR` to the set of names skipped
+  during traversal. The flag is **repeatable** (`--exclude node_modules
+  --exclude dist`). It augments the always-skipped `.git` and the defaults
+  `.cache` / `.uv-cache`; `.git` is not configurable and cannot be removed
+  from the skip set.
 
 `<path>` is required and must be a directory; otherwise argparse exits 2 with a
 usage error. See [file-discovery](file-discovery.md) for what counts as a

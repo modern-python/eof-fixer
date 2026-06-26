@@ -1,5 +1,5 @@
 ---
-summary: Respect nested .gitignore files across the whole tree (pure-filesystem, built on pathspec) and add a repeatable --exclude flag.
+summary: Nested .gitignore files are now respected tree-wide (DFS over per-directory pathspec specs) and a repeatable --exclude flag augments the default skip dirs.
 ---
 
 # Design: Respect nested `.gitignore` across the tree
