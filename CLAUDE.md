@@ -38,8 +38,6 @@ Files skipped: binary files, empty files, `.git`/`.cache`/`.uv-cache` directorie
 
 ## Conventions
 
-- No `print()` in library/CLI source — it's a code smell here. Use
-  `sys.stdout.write(...)` / `sys.stderr.write(...)` with an explicit `\n` in the
-  format string. When fixing output bugs, amend the existing `write` call (add
-  `\n`, change destination) rather than swapping in `print()`. `print()` is fine
-  in tests, scratch scripts, and REPL examples.
+- No `print()` in library/CLI source — use `sys.stdout.write` /
+  `sys.stderr.write` with an explicit `\n`. Rationale + scope:
+  `planning/decisions/2026-06-26-no-print-in-source.md`.
