@@ -18,7 +18,7 @@ def _is_binary(file_obj: IO[bytes]) -> bool:
     return b"\x00" in sample
 
 
-def _detect_trailing(file_obj: IO[bytes]) -> tuple[str, int]:  # noqa: PLR0911
+def _detect_trailing(file_obj: IO[bytes]) -> tuple[str, int]:
     """Inspect the end of `file_obj` and return the action needed.
 
     Returns one of:
@@ -53,7 +53,7 @@ def _detect_trailing(file_obj: IO[bytes]) -> tuple[str, int]:  # noqa: PLR0911
         if remaining.startswith(sequence):
             return ("truncate", position + len(sequence))
 
-    return ("none", 0)  # pragma: no cover
+    raise AssertionError("unreachable")  # pragma: no cover  # noqa: EM101
 
 
 def fix_file(file_obj: IO[bytes], *, check: bool) -> bool:
