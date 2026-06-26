@@ -27,7 +27,8 @@ Many POSIX systems expect text files to end with a newline character. Having con
 
 - Automatically adds a newline to files that don't end with one
 - Removes excess trailing newlines from files that have too many
-- Respects `.gitignore` patterns to avoid processing unwanted files
+- Respects nested `.gitignore` files throughout the tree to avoid processing unwanted files
+- Skip extra paths with the repeatable `--exclude` flag
 - Works with all text file types
 - Cross-platform compatibility (Windows, macOS, Linux)
 - Dry-run mode to preview changes before applying them
@@ -62,6 +63,12 @@ To check which files would be modified without making changes:
 eof-fixer . --check
 ```
 
+To skip extra directories on top of the defaults, pass `--exclude` (repeatable):
+
+```bash
+eof-fixer . --exclude node_modules --exclude dist
+```
+
 ## How It Works
 
 The eof-fixer processes files in the following way:
@@ -88,9 +95,11 @@ The eof-fixer processes files in the following way:
 
 ## Configuration
 
-The tool automatically respects patterns in your `.gitignore` file, so it won't process files that are ignored by Git. Only the `.gitignore` at the root of the supplied path is consulted; nested `.gitignore` files in subdirectories are not read. Additionally, it always ignores:
-- `.git` directories
-- `.cache` and `.uv-cache` directories (used by uv)
+The tool respects your `.gitignore` files, so it won't process files that are ignored by Git. It honors the full nested convention: the `.gitignore` at the root **and** any `.gitignore` files in subdirectories, with standard Git precedence — deeper files override shallower ones, and `!` negations re-include. Ignore resolution is pure-filesystem: `.git/info/exclude` and the global `core.excludesFile` are not consulted, and Git itself is never invoked, so the tool works on any directory, repository or not.
+
+Additionally, it always ignores:
+- `.git` directories (always, not configurable)
+- `.cache` and `.uv-cache` directories (used by uv) by default — pass `--exclude DIR` (repeatable) to add more names to skip on top of these
 - Binary files (detected by null bytes in the first 1024 bytes)
 
 ## Exit Codes
