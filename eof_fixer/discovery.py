@@ -22,7 +22,8 @@ def _is_ignored(rel: str, is_dir: bool, stack: list[tuple[str, GitIgnoreSpec]]) 
     suffix = "/" if is_dir else ""
     for anchor, spec in reversed(stack):
         # rel is always within anchor's subtree: specs are popped on leaving their dir.
-        subpath = rel if not anchor else rel[len(anchor) + 1 :]
+        # (anchor "" → removeprefix("/") leaves rel unchanged, since rel has no leading slash.)
+        subpath = rel.removeprefix(anchor + "/")
         result = spec.check_file(subpath + suffix)
         if result.include is not None:
             return result.include
@@ -63,6 +64,6 @@ def iter_text_files(root: pathlib.Path, extra_excludes: Sequence[str]) -> Iterat
     `.git` is always skipped. `extra_excludes` (e.g. ['.cache', '.uv-cache']) form a
     baseline gitignore spec anchored at root, applied beneath every .gitignore file.
     """
-    baseline = GitIgnoreSpec.from_lines(list(extra_excludes))
+    baseline = GitIgnoreSpec.from_lines(extra_excludes)
     stack: list[tuple[str, GitIgnoreSpec]] = [("", baseline)]
     yield from _walk(root, "", stack)
