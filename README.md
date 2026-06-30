@@ -1,4 +1,10 @@
-# eof-fixer
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)"  srcset="https://raw.githubusercontent.com/modern-python/.github/main/brand/projects/eof-fixer/lockup-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/modern-python/.github/main/brand/projects/eof-fixer/lockup-light.svg">
+    <img alt="eof-fixer" src="https://raw.githubusercontent.com/modern-python/.github/main/brand/projects/eof-fixer/lockup.png" width="420">
+  </picture>
+</p>
 
 [![PyPI version](https://img.shields.io/pypi/v/eof-fixer.svg)](https://pypi.org/project/eof-fixer/)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/eof-fixer.svg)](https://pypi.org/project/eof-fixer/)
