@@ -8,7 +8,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/eof-fixer.svg)](https://pypi.org/project/eof-fixer/)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/eof-fixer.svg)](https://pypi.org/project/eof-fixer/)
-[![Downloads](https://img.shields.io/pypi/dm/eof-fixer.svg)](https://pypistats.org/packages/eof-fixer)
+[![Downloads](https://static.pepy.tech/badge/eof-fixer/month)](https://pepy.tech/projects/eof-fixer)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/modern-python/eof-fixer/actions/workflows/ci.yml)
 [![CI](https://github.com/modern-python/eof-fixer/actions/workflows/ci.yml/badge.svg)](https://github.com/modern-python/eof-fixer/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/modern-python/eof-fixer.svg)](https://github.com/modern-python/eof-fixer/blob/main/LICENSE)
