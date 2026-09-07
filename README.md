@@ -159,7 +159,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/modern-python/eof-fixer/blob/main/LICENSE) file for details.
 
 ## Acknowledgments
 
@@ -177,7 +177,7 @@ be used outside of the pre-commit framework.
 
 ## 📦 [PyPI](https://pypi.org/project/eof-fixer)
 
-## 📝 [License](LICENSE)
+## 📝 [License](https://github.com/modern-python/eof-fixer/blob/main/LICENSE)
 
 ## Part of `modern-python`
 
