@@ -80,8 +80,9 @@ isort.no-lines-before = ["standard-library", "local-folder"]
 "tests/**" = ["S101"]
 
 [tool.pytest.ini_options]
-addopts = "--cov=. --cov-report term-missing --cov-fail-under=100"
+addopts = ""
 
 [tool.coverage]
 run.concurrency = ["thread"]
 report.exclude_also = ["if typing.TYPE_CHECKING:"]
+report.fail_under = 100
