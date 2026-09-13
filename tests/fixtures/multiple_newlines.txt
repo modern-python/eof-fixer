@@ -1,2 +1,0 @@
-This file has multiple newlines at the end
-
