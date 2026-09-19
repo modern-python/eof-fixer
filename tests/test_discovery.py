@@ -98,7 +98,7 @@ def test_ignore_rules_come_only_from_gitignore_files_in_the_tree(tmp_path: pathl
     The tool promises to work on any directory, repository or not, and to be reproducible for two
     people with different machine-level git config. Reading `.git/info/exclude`, the global
     `core.excludesFile`, or anything else `git check-ignore` would consult breaks that — which is
-    the concrete failure mode behind ADR-0002's choice of pathspec over a nested-gitignore library
+    the concrete failure mode behind ADR-0001's choice of pathspec over a nested-gitignore library
     that pulls in the global ignore by default. Shelling out to git breaks it too, and additionally
     fails outright on a plain directory.
     """

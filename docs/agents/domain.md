@@ -17,8 +17,8 @@ Single-context repo:
 /
 ├── CONTEXT.md
 ├── docs/adr/
-│   ├── 0001-no-print-in-source.md
-│   └── 0002-build-on-pathspec-for-nested-gitignore.md
+│   ├── 0001-build-on-pathspec-for-nested-gitignore.md
+│   └── 0002-keep-py310-vendored-assert-never.md
 └── eof_fixer/
 ```
 
@@ -32,4 +32,4 @@ If the concept you need isn't in the glossary yet, that's a signal: either you'r
 
 If your output contradicts an existing ADR, surface it explicitly rather than silently overriding:
 
-> _Contradicts ADR-0001 (no print in source), but worth reopening because…_
+> _Contradicts ADR-0001 (build nested `.gitignore` on pathspec), but worth reopening because…_
