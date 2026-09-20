@@ -5,7 +5,7 @@ license = "MIT"
 readme = "README.md"
 requires-python = ">=3.10,<4"
 dependencies = [
-    "pathspec",
+    "pathspec>=0.12",
 ]
 version = "0"
 authors = [{ name = "modern-python" }]
