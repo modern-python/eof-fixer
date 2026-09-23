@@ -40,9 +40,10 @@ Changelog = "https://github.com/modern-python/eof-fixer/releases"
 eof-fixer = "eof_fixer.main:main"
 
 [dependency-groups]
+# Floored so `uv sync --resolution lowest-direct` resolves a usable harness, not each name's first release.
 dev = [
-    "pytest",
-    "pytest-cov",
+    "pytest>=8",
+    "pytest-cov>=5",
 ]
 lint = [
     "ruff",
