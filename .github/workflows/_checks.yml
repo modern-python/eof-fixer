@@ -47,6 +47,7 @@ jobs:
     # This one resolves the bottom of each range, on every matrix entry: wheel coverage is
     # per interpreter, so two interpreters resolving the same versions can still disagree
     # on whether those versions install.
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
