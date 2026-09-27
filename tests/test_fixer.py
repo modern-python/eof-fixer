@@ -151,7 +151,7 @@ def test_symlink_does_not_crash(tmp_path: pathlib.Path) -> None:
     link = tmp_path / "l.txt"
     try:
         link.symlink_to(target)
-    except (OSError, NotImplementedError):  # pragma: no cover
+    except (OSError, NotImplementedError):  # pragma: no cover - only where the OS refuses symlinks
         pytest.skip("symlinks not available on this platform")
     fixed = _names(fix_directory(tmp_path))
     assert "t.txt" in fixed

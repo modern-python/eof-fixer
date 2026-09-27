@@ -13,7 +13,7 @@ _BINARY_SAMPLE_SIZE = 1024
 
 def _assert_never(value: NoReturn) -> NoReturn:
     """Static-exhaustiveness guard: ty errors if any union member can reach here."""
-    raise AssertionError(value)  # pragma: no cover
+    raise AssertionError(value)  # pragma: no cover - ty proves every call unreachable (ADR-0002)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -72,7 +72,7 @@ def _detect_trailing(file_obj: IO[bytes]) -> _EofAction:
         if remaining.startswith(sequence):
             return Truncate(position + len(sequence))
 
-    raise AssertionError("unreachable")  # pragma: no cover  # noqa: EM101
+    raise AssertionError("unreachable")  # noqa: EM101  # pragma: no cover - remaining is all \n/\r, so a sequence matches
 
 
 def fix_file(file_obj: IO[bytes], *, check: bool) -> bool:
@@ -99,7 +99,7 @@ def fix_file(file_obj: IO[bytes], *, check: bool) -> bool:
                 file_obj.seek(offset)
                 file_obj.truncate()
             return True
-        case _:  # pragma: no cover
+        case _:  # pragma: no cover - exhaustiveness guard; ty verifies every _EofAction is matched
             _assert_never(action)
 
 
