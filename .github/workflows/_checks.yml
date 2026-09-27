@@ -67,10 +67,10 @@ jobs:
           cache-dependency-glob: "**/pyproject.toml"
       - run: uv python install ${{ matrix.python-version }}
       - run: uv python pin ${{ matrix.python-version }}
-      # --no-build so a floor with no wheel for this interpreter fails here instead of
-      # quietly compiling its sdist; --no-install-project because that flag would refuse to
-      # build this project too, and the tests import it from the checkout.
-      - run: uv sync --all-extras --no-install-project --resolution lowest-direct --no-build
+      - run: uv venv
+      # Pinned with builds allowed, so a floor with no wheel fails the wheel-only install below.
+      - run: uv pip compile pyproject.toml --all-extras --no-deps --resolution lowest-direct -o floors.txt
+      - run: uv pip install -r pyproject.toml --all-extras --group dev --constraints floors.txt --no-build
       - run: uv run --no-sync pytest
 
   links:
