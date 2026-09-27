@@ -16,6 +16,16 @@ lint-ci:
     uv run ruff check --no-fix
     uv run ty check
 
+adr_check_source := "https://raw.githubusercontent.com/modern-python/.github/main/tests/test_adr_citations.py"
+
+# Tracks main on purpose: the shared check is unpinned.
+adr-check:
+    #!/usr/bin/env sh
+    set -eu
+    file="$(mktemp -d)/test_adr_citations.py"
+    curl -fsSL "{{ adr_check_source }}" -o "$file"
+    uv run --no-sync pytest --rootdir=. "$file"
+
 test *args:
     uv run --no-sync pytest {{ args }}
 
