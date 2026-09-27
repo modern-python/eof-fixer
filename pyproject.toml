@@ -82,6 +82,7 @@ isort.no-lines-before = ["standard-library", "local-folder"]
 "tests/**" = ["S101"]
 
 [tool.pytest.ini_options]
+testpaths = ["tests"]
 addopts = ""
 
 [tool.coverage]
