@@ -107,7 +107,7 @@ def test_ignore_rules_come_only_from_gitignore_files_in_the_tree(tmp_path: pathl
     (info / "exclude").write_text("*.log\n")
     (tmp_path / "a.log").write_text("x")
 
-    def _no_subprocess(*args: object, **kwargs: object) -> None:  # pragma: no cover
+    def _no_subprocess(*args: object, **kwargs: object) -> None:  # pragma: no cover - runs only if discovery spawns one
         message = f"discovery spawned a subprocess: {args} {kwargs}"
         raise AssertionError(message)
 
@@ -125,7 +125,7 @@ def test_symlinks_are_skipped(tmp_path: pathlib.Path) -> None:
     link = tmp_path / "link.txt"
     try:
         link.symlink_to(target)
-    except (OSError, NotImplementedError):  # pragma: no cover
+    except (OSError, NotImplementedError):  # pragma: no cover - only where the OS refuses symlinks
         pytest.skip("symlinks not available on this platform")
     result = _walk(tmp_path)
     assert "target.txt" in result
