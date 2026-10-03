@@ -18,7 +18,7 @@ Single-context repo:
 ├── CONTEXT.md
 ├── docs/adr/
 │   ├── 0001-build-on-pathspec-for-nested-gitignore.md
-│   └── 0002-keep-py310-vendored-assert-never.md
+│   └── 0003-fix-directory-returns-a-path-list-and-writes-nothing.md
 └── eof_fixer/
 ```
 

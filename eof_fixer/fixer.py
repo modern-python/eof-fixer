@@ -2,18 +2,13 @@ import dataclasses
 import os
 import pathlib
 from collections.abc import Iterator, Sequence
-from typing import IO, NoReturn
+from typing import IO, assert_never
 
 from eof_fixer.discovery import iter_text_files
 
 
 DEFAULT_EXCLUDES = (".cache", ".uv-cache")
 _BINARY_SAMPLE_SIZE = 1024
-
-
-def _assert_never(value: NoReturn) -> NoReturn:
-    """Static-exhaustiveness guard: ty errors if any union member can reach here."""
-    raise AssertionError(value)  # pragma: no cover - ty proves every call unreachable (ADR-0002)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -100,7 +95,7 @@ def fix_file(file_obj: IO[bytes], *, check: bool) -> bool:
                 file_obj.truncate()
             return True
         case _:  # pragma: no cover - exhaustiveness guard; ty verifies every _EofAction is matched
-            _assert_never(action)
+            assert_never(action)
 
 
 def fix_directory(
