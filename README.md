@@ -21,12 +21,12 @@
 A command-line tool that ensures all your text files end with exactly one newline character.
 This tool helps maintain consistent file formatting across your codebase by automatically adding or removing trailing newlines as needed.
 
-## Why This Matters
+## Why this matters
 
 Many POSIX systems expect text files to end with a newline character. Having consistent line endings:
 - Prevents spurious diffs in version control
 - Ensures proper concatenation of files
-- Satisfies POSIX compliance
+- Matches the POSIX definition of a text line
 - Improves readability in terminal environments
 
 ## Features
@@ -44,7 +44,13 @@ Many POSIX systems expect text files to end with a newline character. Having con
 ### Using uv
 
 ```bash
-uv add eof-fixer
+uv tool install eof-fixer
+```
+
+Or run it once without installing:
+
+```bash
+uvx eof-fixer .
 ```
 
 ### Using pip
@@ -55,9 +61,9 @@ pip install eof-fixer
 
 ## Usage
 
-### Basic Usage
+### Basic usage
 
-To fix all files in the current directory and subdirectories:
+The path argument must be a directory. To fix all files in the current directory and subdirectories:
 
 ```bash
 eof-fixer .
@@ -75,23 +81,25 @@ To skip extra directories on top of the defaults, pass `--exclude` (repeatable):
 eof-fixer . --exclude node_modules --exclude dist
 ```
 
-## How It Works
+## How it works
 
 The eof-fixer processes files in the following way:
 
-1. **Files with no trailing newline**: Adds exactly one newline at the end
-2. **Files with exactly one trailing newline**: Leaves unchanged
-3. **Files with multiple trailing newlines**: Truncates to exactly one newline
-4. **Empty files**: Left unchanged
+1. A file with no trailing newline gets exactly one newline appended.
+2. A file with exactly one trailing newline is left unchanged.
+3. A file with multiple trailing newlines is truncated to exactly one newline.
+4. A file containing only newlines is truncated to empty.
+5. An empty file is left unchanged.
 
 ### Examples
 
-| Original File Content | After Processing |
-|----------------------|------------------|
-| `hello world`        | `hello world\n`  |
-| `hello world\n`      | `hello world\n`  |
-| `hello world\n\n\n`  | `hello world\n`  |
-| `` (empty file)      | `` (unchanged)   |
+| Original file content | After processing |
+|-----------------------|------------------|
+| `hello world`         | `hello world\n`  |
+| `hello world\n`       | `hello world\n`  |
+| `hello world\n\n\n`   | `hello world\n`  |
+| `\n\n\n`              | (empty file)     |
+| (empty file)          | (unchanged)      |
 
 > **Note on line endings:** when appending a missing terminator, eof-fixer always
 > writes an LF (`\n`), regardless of the existing line-ending style of the file.
@@ -101,20 +109,21 @@ The eof-fixer processes files in the following way:
 
 ## Configuration
 
-The tool respects your `.gitignore` files, so it won't process files that are ignored by Git. It honors the full nested convention: the `.gitignore` at the root **and** any `.gitignore` files in subdirectories, with standard Git precedence — deeper files override shallower ones, and `!` negations re-include. Ignore resolution is pure-filesystem: `.git/info/exclude` and the global `core.excludesFile` are not consulted, and Git itself is never invoked, so the tool works on any directory, repository or not.
+The tool respects your `.gitignore` files, so it won't process files that are ignored by Git. It honors the full nested convention: the `.gitignore` at the root **and** any `.gitignore` files in subdirectories, with Git precedence: deeper files override shallower ones, and `!` negations re-include. Ignore resolution is pure-filesystem: `.git/info/exclude` and the global `core.excludesFile` are not consulted, and Git itself is never invoked, so the tool works on any directory, repository or not.
 
-Additionally, it always skips:
+It also skips:
 - `.git` directories (always, not configurable)
-- `.cache` and `.uv-cache` directories (used by uv) by default — pass `--exclude DIR` (repeatable) to add more names to skip on top of these
+- `.cache` and `.uv-cache` directories (used by uv) by default; pass `--exclude DIR` (repeatable) to add more names to skip on top of these
 - Binary files (detected by null bytes in the first 1024 bytes)
 
-## Exit Codes
+## Exit codes
 
 - `0`: No files needed fixing.
 - `1`: At least one file needed fixing. In `--check` mode no changes are written;
   in the default (fix) mode the files have been rewritten in place. The non-zero
-  exit in fix mode is intentional so the tool can be used as a pre-commit or CI
-  gate — re-run after the fix and the exit code returns to `0`.
+  exit in fix mode is intentional so the tool can be used as a CI gate. A second
+  run exits `0`.
+- `2`: Usage error, including a path that is not a directory.
 
 ## Development
 
@@ -133,7 +142,7 @@ cd eof-fixer
 just install
 ```
 
-### Running Tests
+### Running tests
 
 ```bash
 # Run tests
@@ -149,17 +158,7 @@ just lint
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/modern-python/eof-fixer/blob/main/LICENSE) file for details.
+Fork the repository, make your change on a branch, run `just lint` and `just test`, and open a pull request.
 
 ## Acknowledgments
 
@@ -170,7 +169,7 @@ which is also distributed under the MIT License. This project repackages that
 logic as a standalone CLI with `.gitignore`-aware directory traversal so it can
 be used outside of the pre-commit framework.
 
-## Related Projects
+## Related projects
 
 - [pre-commit](https://pre-commit.com/) - A framework for managing and maintaining multi-language pre-commit hooks
 - [editorconfig](https://editorconfig.org/) - Helps maintain consistent coding styles across different editors and IDEs
@@ -182,4 +181,4 @@ be used outside of the pre-commit framework.
 ## Part of `modern-python`
 
 Browse the full list of templates and libraries in
-[`modern-python`](https://github.com/modern-python) — see the org profile for the categorized index.
+[`modern-python`](https://github.com/modern-python). The org profile has the categorized index.
