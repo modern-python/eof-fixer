@@ -1,7 +1,7 @@
 import os
 import sys
 import tempfile
-from collections.abc import Iterator
+from collections.abc import Generator
 from contextlib import contextmanager
 from io import StringIO
 from pathlib import Path
@@ -12,7 +12,7 @@ from eof_fixer.main import main
 
 
 @contextmanager
-def _run_main_in(temp_dir: Path, argv: list[str]) -> Iterator[tuple[StringIO, StringIO]]:
+def _run_main_in(temp_dir: Path, argv: list[str]) -> Generator[tuple[StringIO, StringIO]]:
     """Swap cwd, argv, stdout, stderr around a ``main()`` call."""
     captured_stdout = StringIO()
     captured_stderr = StringIO()
