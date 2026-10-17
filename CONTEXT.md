@@ -10,14 +10,14 @@ docs must agree on it. General programming vocabulary does not belong here, howe
 uses it.
 
 **Terminator**:
-The byte sequence that ends a line — `\n`, `\r\n`, or `\r`. "Exactly one terminator" is counted in
+The byte sequence that ends a line: `\n`, `\r\n`, or `\r`. "Exactly one terminator" is counted in
 sequences, not bytes: a file ending in a single `\r\n` is already correct. The tool normalizes the
 *count* and preserves the *style*, with one exception: a file that ends in no terminator at all gets
 an LF, whatever the rest of it uses.
 
 **Fixed**:
 What `fix_file` and `fix_directory` report. Under `--check` nothing is written, yet the same paths
-come back — "fixed" there means *would be*. The exit code is derived from the same list either way.
+come back; "fixed" there means *would be*. The exit code is derived from the same list either way.
 
 **Check mode**:
 The `--check` run: decide and report, write nothing.

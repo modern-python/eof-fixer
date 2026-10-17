@@ -6,12 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `eof-fixer` is a single-purpose CLI: it walks a directory tree and rewrites every text file it
 visits to end with exactly one line terminator. [`CONTEXT.md`](CONTEXT.md) opens with what it does
-and owns the vocabulary — read it before naming a concept in code, a test name, or an issue title.
+and owns the vocabulary. Read it before naming a concept in code, a test name, or an issue title.
 
 ## Commands
 
-`just` (task runner) and `uv` (package manager). The [`justfile`](justfile) is the source of truth —
-`just --list`, or read it.
+`just` (task runner) and `uv` (package manager). The [`justfile`](justfile) is the source of truth:
+run `just --list`, or read it.
 
 ## Architecture
 
