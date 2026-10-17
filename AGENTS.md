@@ -11,7 +11,7 @@ and owns the vocabulary. Read it before naming a concept in code, a test name, o
 ## Commands
 
 `just` (task runner) and `uv` (package manager). The [`justfile`](justfile) is the source of truth:
-run `just --list`, or read it.
+`just --list`, or read it.
 
 ## Architecture
 
