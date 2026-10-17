@@ -174,9 +174,10 @@ be used outside of the pre-commit framework.
 - [pre-commit](https://pre-commit.com/) - A framework for managing and maintaining multi-language pre-commit hooks
 - [editorconfig](https://editorconfig.org/) - Helps maintain consistent coding styles across different editors and IDEs
 
-## 📦 [PyPI](https://pypi.org/project/eof-fixer)
+## Links
 
-## 📝 [License](https://github.com/modern-python/eof-fixer/blob/main/LICENSE)
+- [PyPI](https://pypi.org/project/eof-fixer)
+- [License](https://github.com/modern-python/eof-fixer/blob/main/LICENSE)
 
 ## Part of `modern-python`
 
