@@ -28,6 +28,8 @@ jobs:
           - "3.13"
           - "3.14"
           - "3.14t"
+          - "3.15"
+          - "3.15t"
     steps:
       - uses: actions/checkout@v6
       - uses: extractions/setup-just@v4
@@ -39,7 +41,7 @@ jobs:
       - run: uv python pin ${{ matrix.python-version }}
       - run: just install
       - name: Confirm the interpreter is free-threaded
-        if: matrix.python-version == '3.14t'
+        if: endsWith(matrix.python-version, 't')
         run: uv run --no-sync python -c "import sys, eof_fixer; assert not sys._is_gil_enabled(), 'GIL is enabled on a t-build'"
       - run: just test-ci
   floors:
@@ -58,6 +60,8 @@ jobs:
           - "3.13"
           - "3.14"
           - "3.14t"
+          - "3.15"
+          - "3.15t"
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v8.2.0
