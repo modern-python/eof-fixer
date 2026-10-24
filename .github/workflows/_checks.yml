@@ -46,9 +46,8 @@ jobs:
       - run: just test-ci
   floors:
     # Every other job resolves newest, so the declared floors are a claim nothing installs.
-    # This one resolves the bottom of each range, on every matrix entry: wheel coverage is
-    # per interpreter, so two interpreters resolving the same versions can still disagree
-    # on whether those versions install.
+    # This one installs them exactly on the floor Python, and the lowest versions with a wheel
+    # on every other entry (CI10).
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     strategy:
@@ -72,7 +71,10 @@ jobs:
       - run: uv python pin ${{ matrix.python-version }}
       - run: uv venv
       # Pinned with builds allowed, so a floor with no wheel fails the wheel-only install below.
-      - run: uv pip compile pyproject.toml --all-extras --no-deps --resolution lowest-direct -o floors.txt
+      - if: matrix.python-version == '3.11'
+        run: uv pip compile pyproject.toml --all-extras --no-deps --resolution lowest-direct -o floors.txt
+      - if: matrix.python-version != '3.11'
+        run: uv pip compile pyproject.toml --all-extras --resolution lowest-direct --no-build -o floors.txt
       - run: uv pip install -r pyproject.toml --all-extras --group dev --constraints floors.txt --no-build
       - run: uv run --no-sync pytest
 
